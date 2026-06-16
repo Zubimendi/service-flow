@@ -6,6 +6,7 @@ export interface SessionUser {
   name: string;
   role: Role;
   tenantId: string | null;
+  tenantSlug?: string | null;
 }
 
 declare module "next-auth" {

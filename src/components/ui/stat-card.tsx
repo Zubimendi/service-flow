@@ -7,9 +7,10 @@ interface StatCardProps {
   label: string;
   value: string;
   icon: LucideIcon;
-  trend?: string;
+  trend?: { value: string; positive?: boolean };
   isLoading?: boolean;
   className?: string;
+  iconClassName?: string;
 }
 
 export function StatCard({
@@ -19,23 +20,38 @@ export function StatCard({
   trend,
   isLoading,
   className,
+  iconClassName,
 }: StatCardProps) {
   return (
     <Card className={cn("hover:shadow-card-hover", className)}>
       <CardContent className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="space-y-2">
-            <p className="text-caption">{label}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 space-y-2">
+            <p className="text-label-md text-muted-foreground normal-case tracking-normal font-medium">
+              {label}
+            </p>
             {isLoading ? (
-              <Skeleton className="h-10 w-24" />
+              <Skeleton className="h-12 w-28" />
             ) : (
-              <p className="text-display text-3xl md:text-4xl">{value}</p>
+              <p className="text-display-metrics text-3xl md:text-[40px]">{value}</p>
             )}
             {trend && !isLoading && (
-              <p className="text-caption text-muted-foreground">{trend}</p>
+              <p
+                className={cn(
+                  "text-label-sm font-semibold",
+                  trend.positive ? "text-success" : "text-muted-foreground"
+                )}
+              >
+                {trend.positive ? "↑ " : ""}{trend.value}
+              </p>
             )}
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+          <div
+            className={cn(
+              "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-light",
+              iconClassName
+            )}
+          >
             <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
           </div>
         </div>

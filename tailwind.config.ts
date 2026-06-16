@@ -27,26 +27,41 @@ const config: Config = {
         primary: {
           DEFAULT: "var(--primary)",
           foreground: "var(--primary-foreground)",
+          container: "var(--primary-container)",
+          light: "var(--primary-light)",
         },
         secondary: {
           DEFAULT: "var(--secondary)",
           foreground: "var(--secondary-foreground)",
         },
-        accent: {
-          DEFAULT: "var(--accent)",
-          foreground: "var(--accent-foreground)",
-        },
         destructive: {
           DEFAULT: "var(--destructive)",
           foreground: "var(--destructive-foreground)",
+          container: "var(--destructive-container)",
         },
-        success: "var(--success)",
-        warning: "var(--warning)",
-        info: "var(--info)",
+        success: {
+          DEFAULT: "var(--success)",
+          container: "var(--success-container)",
+        },
+        warning: {
+          DEFAULT: "var(--warning)",
+          container: "var(--warning-container)",
+        },
+        info: {
+          DEFAULT: "var(--info)",
+          container: "var(--info-container)",
+        },
         sidebar: {
           DEFAULT: "var(--sidebar)",
           foreground: "var(--sidebar-foreground)",
+          "foreground-active": "var(--sidebar-foreground-active)",
           border: "var(--sidebar-border)",
+          active: "var(--sidebar-active)",
+        },
+        surface: {
+          low: "var(--surface-container-low)",
+          DEFAULT: "var(--surface-container)",
+          high: "var(--surface-container-high)",
         },
         tenant: {
           primary: "var(--tenant-primary)",
@@ -54,16 +69,20 @@ const config: Config = {
       },
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        xl: "var(--radius-xl)",
+        md: "0.75rem",
+        sm: "0.5rem",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        sans: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+      },
+      spacing: {
+        gutter: "24px",
       },
       boxShadow: {
-        card: "0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04)",
+        card: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
         "card-hover":
-          "0 4px 6px -1px rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.06)",
+          "0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05)",
       },
       transitionDuration: {
         DEFAULT: "150ms",

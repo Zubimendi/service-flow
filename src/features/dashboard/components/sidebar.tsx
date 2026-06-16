@@ -2,19 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   CalendarDays,
   ChevronLeft,
-  ChevronRight,
   LayoutDashboard,
   Scissors,
   Settings,
   Users,
   UserCircle,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navItems = [
   { href: "", label: "Today", icon: LayoutDashboard },
@@ -30,32 +31,32 @@ interface SidebarProps {
   tenantName: string;
 }
 
-export function Sidebar({ slug, tenantName }: SidebarProps) {
+function SidebarContent({ slug, tenantName, onNavigate }: SidebarProps & { onNavigate?: () => void }) {
   const pathname = usePathname();
-  const { sidebarCollapsed, toggleSidebar } = useUIStore();
+  const { data: session } = useSession();
+  const { sidebarCollapsed } = useUIStore();
   const base = `/t/${slug}/dashboard`;
+  const collapsed = sidebarCollapsed;
 
   return (
-    <aside
-      className={cn(
-        "flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-200",
-        sidebarCollapsed ? "w-16" : "w-60"
-      )}
-    >
-      <div className="flex h-14 items-center border-b border-sidebar-border px-4">
-        {!sidebarCollapsed && (
-          <div className="flex items-center gap-2 overflow-hidden">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground text-xs font-bold">
-              {tenantName.charAt(0)}
-            </div>
-            <span className="truncate text-sm font-semibold text-sidebar-foreground">
+    <>
+      <div className={cn("flex items-center gap-3 px-5 py-6", collapsed && "justify-center px-3")}>
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-sm font-bold text-white">
+          {tenantName.charAt(0)}
+        </div>
+        {!collapsed && (
+          <div className="min-w-0">
+            <p className="truncate text-sm font-bold text-sidebar-foreground-active">
               {tenantName}
-            </span>
+            </p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/60">
+              ServiceFlow CRM
+            </p>
           </div>
         )}
       </div>
 
-      <nav className="flex-1 space-y-1 p-2">
+      <nav className="flex-1 space-y-1 px-3">
         {navItems.map((item) => {
           const href = `${base}${item.href}`;
           const isActive =
@@ -68,40 +69,98 @@ export function Sidebar({ slug, tenantName }: SidebarProps) {
             <Link
               key={item.href}
               href={href}
+              onClick={onNavigate}
               className={cn(
-                "flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors",
+                "flex h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-all duration-150",
                 isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-sidebar-foreground hover:bg-accent",
-                sidebarCollapsed && "justify-center px-0"
+                  ? "bg-sidebar-active text-sidebar-foreground-active"
+                  : "text-sidebar-foreground hover:bg-white/5 hover:text-sidebar-foreground-active",
+                collapsed && "justify-center px-0"
               )}
-              title={sidebarCollapsed ? item.label : undefined}
+              title={collapsed ? item.label : undefined}
             >
-              <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-              {!sidebarCollapsed && item.label}
+              <Icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+              {!collapsed && item.label}
             </Link>
           );
         })}
       </nav>
 
-      <div className="border-t border-sidebar-border p-2">
-        <Button
-          variant="ghost"
-          size={sidebarCollapsed ? "icon" : "default"}
+      <div className={cn("border-t border-sidebar-border p-4", collapsed && "px-2")}>
+        <div className={cn("flex items-center gap-3", collapsed && "justify-center")}>
+          <Avatar className="h-9 w-9">
+            <AvatarFallback className="bg-primary/30 text-xs text-white">
+              {session?.user?.name?.charAt(0) ?? "U"}
+            </AvatarFallback>
+          </Avatar>
+          {!collapsed && (
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-sidebar-foreground-active">
+                {session?.user?.name}
+              </p>
+              <p className="truncate text-xs text-sidebar-foreground/60">Admin Access</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function Sidebar({ slug, tenantName }: SidebarProps) {
+  const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, setMobileSidebarOpen } =
+    useUIStore();
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside
+        className={cn(
+          "hidden h-screen flex-col bg-sidebar transition-all duration-200 lg:flex",
+          sidebarCollapsed ? "w-[72px]" : "w-[260px]"
+        )}
+      >
+        <SidebarContent slug={slug} tenantName={tenantName} />
+        <button
           onClick={toggleSidebar}
-          className={cn("w-full", sidebarCollapsed && "w-10")}
+          className="mx-3 mb-4 flex h-9 items-center justify-center rounded-lg text-sidebar-foreground transition-colors hover:bg-white/5"
           aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {sidebarCollapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <>
-              <ChevronLeft className="h-4 w-4" />
-              Collapse
-            </>
-          )}
-        </Button>
-      </div>
-    </aside>
+          <ChevronLeft
+            className={cn("h-4 w-4 transition-transform", sidebarCollapsed && "rotate-180")}
+          />
+        </button>
+      </aside>
+
+      {/* Mobile overlay */}
+      {mobileSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Mobile drawer */}
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col bg-sidebar transition-transform duration-200 lg:hidden",
+          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <button
+          onClick={() => setMobileSidebarOpen(false)}
+          className="absolute right-3 top-5 rounded-lg p-1.5 text-sidebar-foreground hover:bg-white/5"
+          aria-label="Close menu"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        <SidebarContent
+          slug={slug}
+          tenantName={tenantName}
+          onNavigate={() => setMobileSidebarOpen(false)}
+        />
+      </aside>
+    </>
   );
 }

@@ -6,6 +6,7 @@ import { loginSchema } from "@/lib/validations/auth";
 import "@/types/auth";
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },
@@ -68,6 +69,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id;
         session.user.role = token.role;
         session.user.tenantId = token.tenantId;
+        (session.user as { tenantSlug?: string | null }).tenantSlug = token.tenantSlug;
       }
       return session;
     },

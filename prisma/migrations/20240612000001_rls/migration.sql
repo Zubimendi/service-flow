@@ -105,11 +105,22 @@ CREATE POLICY payments_tenant_isolation ON payments
   );
 
 -- Prevent double-booking: no overlapping appointments for same staff
+-- tstzrange() is STABLE (timezone-dependent), so GiST/EXCLUDE indexes require an
+-- IMMUTABLE wrapper — plain tstzrange() fails with SQLSTATE 42P17 on Neon/Postgres.
+CREATE OR REPLACE FUNCTION appointment_time_range(start_ts timestamptz, end_ts timestamptz)
+RETURNS tstzrange
+LANGUAGE sql
+IMMUTABLE
+PARALLEL SAFE
+AS $$
+  SELECT tstzrange(start_ts, end_ts, '[)');
+$$;
+
 ALTER TABLE appointments
   ADD CONSTRAINT appointments_no_overlap
   EXCLUDE USING gist (
     "tenantId" WITH =,
     "staffId" WITH =,
-    tstzrange("startTime", "endTime") WITH &&
+    appointment_time_range("startTime", "endTime") WITH &&
   )
   WHERE (status NOT IN ('CANCELLED', 'NO_SHOW'));

@@ -51,21 +51,35 @@ Edit `.env.local` with your values:
 
 ### 3. Start PostgreSQL
 
+**Option A — Docker (recommended):**
 ```bash
 docker compose up -d
+# If permission denied, run: sudo usermod -aG docker $USER && re-login
 ```
 
-Or use your own Postgres instance and update `DATABASE_URL` in `.env.local`.
+**Option B — Local PostgreSQL:**
+Install Postgres 14+ and create a database:
+```sql
+CREATE DATABASE serviceflow;
+```
+
+Update `DATABASE_URL` and `DIRECT_URL` in `.env.local` with your credentials.
 
 ### 4. Database setup
 
 ```bash
+# Verify database connection
+curl http://localhost:3000/api/health
+
 # Run migrations (includes RLS policies + double-booking constraint)
 npm run db:migrate
 
 # Seed demo data
 npm run db:seed
 ```
+
+> **Login won't work until the database is running and seeded.** Use demo credentials after seeding:
+> `owner@glow-salon.com` / `password123`
 
 ### 5. Start development server
 

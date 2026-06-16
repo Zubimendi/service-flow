@@ -35,8 +35,8 @@ export default async function DashboardLayout({
     <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar slug={params.slug} tenantName={tenant.name} />
       <div className="flex flex-1 flex-col overflow-hidden">
-        <TopBar />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <TopBar tenantName={tenant.name} />
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">{children}</main>
       </div>
     </div>
   );
