@@ -88,7 +88,7 @@ model User {
 
   tenant              Tenant?             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   staffAvailabilities StaffAvailability[]
-  appointmentsAsStaff Appointment[]     @relation("StaffAppointments")
+  appointmentsAsStaff Appointment[]       @relation("StaffAppointments")
 
   @@index([tenantId])
   @@map("users")
@@ -201,4 +201,42 @@ model StripeEvent {
   createdAt DateTime @default(now())
 
   @@map("stripe_events")
+}
+
+enum AuditEventType {
+  TENANT_CREATED
+  TENANT_SUSPENDED
+  TENANT_ACTIVATED
+  TENANT_DELETED
+  ADMIN_IMPERSONATED_TENANT
+  IMPERSONATION_ENDED
+  PLAN_CHANGED
+  FEATURE_FLAG_TOGGLED
+  APPOINTMENT_STATUS_CHANGED
+  PAYMENT_PROCESSED
+}
+
+model AuditLog {
+  id          String         @id @default(cuid())
+  createdAt   DateTime       @default(now())
+  actorId     String
+  actorEmail  String
+  eventType   AuditEventType
+  description String
+  tenantId    String?
+  metadata    Json?
+
+  @@map("audit_logs")
+}
+
+model FeatureFlag {
+  id        String   @id @default(cuid())
+  key       String
+  tenantId  String?
+  enabled   Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  @@unique([key, tenantId])
+  @@map("feature_flags")
 }
