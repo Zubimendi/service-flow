@@ -1,23 +1,37 @@
-import { redirect } from 'next/navigation';
-import { headers, cookies } from 'next/headers';
+import { requireAdmin } from '@/lib/admin/requireAdmin';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminTopBar from '@/components/admin/AdminTopBar';
-// Assuming we have a way to check auth here (e.g., token decoding)
-// import { requireAdmin } from '@/lib/admin/requireAdmin';
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // await requireAdmin(); // Validate server-side role
-  
+  // Real RBAC enforcement — redirects non-admins to /login
+  const { user } = await requireAdmin();
+
   return (
-    <div className="flex h-screen w-full bg-gray-50">
-      <AdminSidebar />
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <AdminTopBar />
-        <main className="flex-1 overflow-y-auto p-6">
+    <div
+      className="admin-root"
+      style={{
+        display: 'flex',
+        height: '100vh',
+        width: '100%',
+        backgroundColor: '#080811',
+        overflow: 'hidden',
+      }}
+    >
+      <AdminSidebar adminName={user.name} adminEmail={user.email} />
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+        <AdminTopBar adminName={user.name} adminEmail={user.email} />
+        <main
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '28px 32px',
+            backgroundColor: '#080811',
+          }}
+        >
           {children}
         </main>
       </div>

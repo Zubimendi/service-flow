@@ -99,6 +99,8 @@ const ToastDescription = React.forwardRef<
 ));
 ToastDescription.displayName = ToastPrimitives.Description.displayName;
 
+export type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>;
+
 export {
   ToastProvider,
   ToastViewport,

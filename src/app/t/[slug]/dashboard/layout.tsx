@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth/auth-options";
 import { getTenantBySlug } from "@/lib/db/tenant-client";
 import { Sidebar } from "@/features/dashboard/components/sidebar";
 import { TopBar } from "@/features/dashboard/components/top-bar";
+import { validateImpersonationToken } from "@/lib/admin/impersonation";
+import { ImpersonationBanner } from "@/components/admin/ui/ImpersonationBanner";
 
 export default async function DashboardLayout({
   children,
@@ -31,8 +33,18 @@ export default async function DashboardLayout({
   const tenant = await getTenantBySlug(params.slug);
   if (!tenant) notFound();
 
+  // Check if active impersonation session matches current tenant
+  const impersonation = await validateImpersonationToken();
+  const isImpersonatingThisTenant = impersonation && impersonation.tenantId === tenant.id;
+
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div 
+      className="flex h-screen overflow-hidden bg-background"
+      style={isImpersonatingThisTenant ? { paddingTop: '44px' } : undefined}
+    >
+      {isImpersonatingThisTenant && (
+        <ImpersonationBanner tenantName={tenant.name} tenantId={tenant.id} />
+      )}
       <Sidebar slug={params.slug} tenantName={tenant.name} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <TopBar tenantName={tenant.name} />
@@ -41,3 +53,4 @@ export default async function DashboardLayout({
     </div>
   );
 }
+

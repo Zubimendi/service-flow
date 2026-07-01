@@ -212,8 +212,11 @@ enum AuditEventType {
   IMPERSONATION_ENDED
   PLAN_CHANGED
   FEATURE_FLAG_TOGGLED
+  FEATURE_FLAG_GLOBAL_TOGGLED
   APPOINTMENT_STATUS_CHANGED
   PAYMENT_PROCESSED
+  ADMIN_CREATED
+  TENANT_PLAN_CHANGED
 }
 
 model AuditLog {
@@ -230,13 +233,28 @@ model AuditLog {
 }
 
 model FeatureFlag {
-  id        String   @id @default(cuid())
-  key       String
-  tenantId  String?
-  enabled   Boolean  @default(false)
-  updatedAt DateTime @updatedAt
-  updatedBy String
+  id          String   @id @default(cuid())
+  key         String
+  name        String   @default("")
+  description String   @default("")
+  tenantId    String?
+  enabled     Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+  updatedBy   String
 
   @@unique([key, tenantId])
   @@map("feature_flags")
+}
+
+// Stores daily platform revenue/growth snapshots for analytics charts
+model RevenueSnapshot {
+  id             String   @id @default(cuid())
+  date           DateTime @unique
+  mrrCents       Int      @default(0)
+  newTenants     Int      @default(0)
+  churnedTenants Int      @default(0)
+  bookings       Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@map("revenue_snapshots")
 }

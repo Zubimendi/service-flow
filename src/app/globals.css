@@ -53,6 +53,48 @@
     --radius-xl: 1.5rem;
   }
 
+  /* ── Admin Dark Theme ───────────────────────────────────────────── */
+  .admin-root {
+    --adm-bg:            #080811;
+    --adm-surface:       #0e0e1a;
+    --adm-surface-2:     #14142a;
+    --adm-surface-3:     #1c1c36;
+    --adm-border:        rgba(255, 255, 255, 0.06);
+    --adm-border-accent: rgba(108, 99, 255, 0.35);
+
+    --adm-accent:        #6C63FF;
+    --adm-accent-light:  #8B7FFF;
+    --adm-accent-muted:  rgba(108, 99, 255, 0.12);
+    --adm-accent-glow:   rgba(108, 99, 255, 0.30);
+
+    --adm-text:          #E8E8F4;
+    --adm-text-muted:    #8080A8;
+    --adm-text-subtle:   #50506A;
+
+    --adm-success:       #10B981;
+    --adm-success-muted: rgba(16, 185, 129, 0.12);
+    --adm-success-glow:  rgba(16, 185, 129, 0.25);
+
+    --adm-warning:       #F59E0B;
+    --adm-warning-muted: rgba(245, 158, 11, 0.12);
+
+    --adm-danger:        #F43F5E;
+    --adm-danger-muted:  rgba(244, 63, 94, 0.12);
+    --adm-danger-glow:   rgba(244, 63, 94, 0.25);
+
+    --adm-gold:          #F59E0B;
+    --adm-gold-muted:    rgba(245, 158, 11, 0.15);
+
+    --adm-info:          #38BDF8;
+    --adm-info-muted:    rgba(56, 189, 248, 0.12);
+
+    --adm-sidebar-w:     280px;
+    --adm-topbar-h:      64px;
+    --adm-radius:        12px;
+    --adm-radius-lg:     16px;
+    --adm-radius-sm:     8px;
+  }
+
   * {
     @apply border-border;
   }
@@ -60,6 +102,39 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Custom Scrollbar Styles */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--outline-variant);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--outline);
+  }
+
+  /* Firefox support */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--outline-variant) transparent;
+  }
+
+  /* Admin specific scrollbars */
+  .admin-root ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+  }
+  .admin-root ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .admin-root * {
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
   }
 }
 

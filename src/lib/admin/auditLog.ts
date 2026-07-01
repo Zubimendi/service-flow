@@ -1,16 +1,6 @@
 import { adminDb } from './adminDb';
 
-type AuditEventType =
-  | 'TENANT_CREATED'
-  | 'TENANT_SUSPENDED'
-  | 'TENANT_ACTIVATED'
-  | 'TENANT_DELETED'
-  | 'ADMIN_IMPERSONATED_TENANT'
-  | 'IMPERSONATION_ENDED'
-  | 'PLAN_CHANGED'
-  | 'FEATURE_FLAG_TOGGLED'
-  | 'APPOINTMENT_STATUS_CHANGED'
-  | 'PAYMENT_PROCESSED';
+import { AuditEventType } from '@prisma/client';
 
 interface WriteAuditLogParams {
   actorId: string;
@@ -18,7 +8,7 @@ interface WriteAuditLogParams {
   eventType: AuditEventType;
   description: string;
   tenantId?: string | null;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 export async function writeAuditLog(params: WriteAuditLogParams) {
@@ -35,6 +25,6 @@ export async function writeAuditLog(params: WriteAuditLogParams) {
     });
   } catch (error) {
     console.error('Failed to write audit log:', error);
-    // Never throw! Logging failure should not break the actual action.
+    // Never throw — logging failure must not break the actual action.
   }
 }
